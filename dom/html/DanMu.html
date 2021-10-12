@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input id="file" type="file">
+<div id="parent">
+    <div id="bTanMu">
+        <div id="bTanMu-show"></div>
+    </div>
+    <div id="video"></div>
+</div>
+</body>
+<style>
+
+</style>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    const input = document.getElementById("file")
+    const bDanMu = new BDanMu("parent");
+
+    function BDanMu(parentDom) {
+        this.initFlag = false;
+        this.pDom = parentDom;
+        this.dom = null;
+        this.timer = null;
+        this.danMuChi = [];
+        this.channels = [[],[],[],[],[]];
+    }
+
+    BDanMu.prototype.init = function () {
+        this.dom = $(
+            "    <div id=\"bTanMu\">\n" +
+            "        <div id=\"bTanMu-show\"></div>\n" +
+            "    </div>");
+        $(this.pDom).append(this.dom);
+        this.initFlag = true;
+    }
+
+    BDanMu.prototype.addXmlToDanMuChi = function (dom) {
+        let data = $(dom).find("d")
+        for (let d of data) {
+            let dd = $(d).attr("p").split(",");
+            this.danMuChi.push(this.newDanMu(dd[0],d.innerText))
+        }
+        this.log("当前弹幕池", this.danMuChi)
+    }
+
+    BDanMu.prototype.newDanMu = function (time, value, size, color) {
+        return {
+            time: time,
+            value: value,
+            size: size,
+            color: color
+        };
+    }
+
+    BDanMu.prototype.selector = function () {
+        // 从弹幕池中取元素放入管道中
+    }
+
+    BDanMu.prototype.start = function () {
+        if (this.initFlag) {
+            if (this.timer === null) {
+                this.timer = setInterval(this.selector, 100);
+            }
+        } else {
+            this.log("未初始化，无法启动");
+        }
+    }
+
+    BDanMu.prototype.stop = function () {
+        try {
+            clearInterval(this.timer);
+            this.timer = null;
+        } catch (e) {
+            this.log(e)
+        }
+    }
+
+    BDanMu.prototype.log = function (...data) {
+        console.log("BTanMu：", data);
+    }
+
+    input.addEventListener('change', function() {
+        if(this.files.length){
+            let file = this.files[0];
+            let reader = new FileReader();
+            reader.onload = function(){
+                bDanMu.init();
+                bDanMu.addXmlToDanMuChi(this.result)
+                // todo
+            };
+            reader.readAsText(file);
+        }
+    }, false);
+</script>
+</html>
