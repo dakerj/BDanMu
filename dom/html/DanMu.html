@@ -7,36 +7,94 @@
 <body>
 <input id="file" type="file">
 <div id="parent">
-    <div id="bTanMu">
-        <div id="bTanMu-show"></div>
-    </div>
     <div id="video"></div>
 </div>
 </body>
 <style>
-
+    #bTanMu{
+        position: relative;
+        left: -25%;
+    }
+    #bTanMu-show{
+        position: relative;
+        top: -100%;
+        overflow: hidden;
+    }
+    #video{
+        width: 100%;
+        height: 100%;
+        border: black 1px solid;
+    }
+    #parent{
+        width: 800px;
+        height: 600px;
+        margin: 40px auto;
+    }
 </style>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="/lib/jquery3.6.0.js"></script>
 <script>
-    const input = document.getElementById("file")
-    const bDanMu = new BDanMu("parent");
-
     function BDanMu(parentDom) {
         this.initFlag = false;
         this.pDom = parentDom;
         this.dom = null;
+        this.showDom = null;
         this.timer = null;
         this.danMuChi = [];
         this.channels = [[],[],[],[],[]];
     }
 
     BDanMu.prototype.init = function () {
-        this.dom = $(
-            "    <div id=\"bTanMu\">\n" +
-            "        <div id=\"bTanMu-show\"></div>\n" +
-            "    </div>");
-        $(this.pDom).append(this.dom);
-        this.initFlag = true;
+        if (!this.initFlag) {
+            let p = $(this.pDom)
+            if (p.length < 1) {
+                this.log("找不到该元素", this.pDom);
+                return ;
+            }
+            this.pDom = $(this.pDom);
+            this.showDom = $("<div id=\"bTanMu-show\"></div>");
+            this.dom = $("<div id=\"bTanMu\"></div>")
+            $(this.showDom).append(this.dom);
+            $(this.pDom).append(this.showDom);
+
+            $(this.showDom).css({
+                "height": "100%",
+                "width": "100%",
+                "overflow": "hidden",
+                "position": "relative",
+                "top": "-100%"
+            });
+            // $(this.dom).css({
+            //     "height": "100%",
+            //     "width": "150%",
+            //     "position": "relative",
+            //     "left": "-25%"
+            // });
+            this.log("add", this.dom, "to", this.pDom);
+            // for(let cIdx in this.channels) {
+            //
+            // }
+            let tanmu = $("<h1>aaaa</h1>")
+            // console.log($(this.showDom).left());
+            // let start = $(this.showDom).left
+            $(this.showDom).append(tanmu);
+            $(tanmu).css({
+                "user-select": "none",
+                "white-space": "nowrap",
+                "position": "absolute",
+                "top": "40px",
+                "left": "100%",
+                'transition-duration': '7s',
+                'transition-property': 'transform',
+                'will-change': 'transform'
+            })
+            let o = setTimeout(() => {
+                $(tanmu).css("transform", "translateX(-700px)")
+                clearTimeout(o)
+            },1000)
+
+            this.initFlag = true;
+        }
     }
 
     BDanMu.prototype.addXmlToDanMuChi = function (dom) {
@@ -59,6 +117,7 @@
 
     BDanMu.prototype.selector = function () {
         // 从弹幕池中取元素放入管道中
+
     }
 
     BDanMu.prototype.start = function () {
@@ -83,6 +142,10 @@
     BDanMu.prototype.log = function (...data) {
         console.log("BTanMu：", data);
     }
+
+    const input = document.getElementById("file")
+    const bDanMu = new BDanMu("#parent");
+    bDanMu.init();
 
     input.addEventListener('change', function() {
         if(this.files.length){
