@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input id="file" type="file">
+<div style="width: 400px;height: 300px;overflow: hidden;">
+    <canvas id="tanmu"  width="600" height="300"></canvas>
+</div>
+
+</body>
+<script>
+    const input = document.getElementById("file")
+    const tanMuChi = new TanMuChi("tanmu");
+    let time = 0;
+
+    input.addEventListener('change', function() {
+        if(this.files.length){
+            let file = this.files[0];
+            let reader = new FileReader();
+            reader.onload = function(){
+                let dom = document.createElement("div")
+                dom.innerHTML = this.result;
+                tanMuChi.setData(dom);
+                let timer = setInterval(() => {
+                    tanMuChi.addTanMu();
+                    tanMuChi.render();
+                    tanMuChi.calcX();
+                    if (tanMuChi.isAllEnd()) {
+                        clearInterval(timer)
+                    }
+                    time = time + 0.03;
+                },30)
+            };
+            reader.readAsText(file);
+        }
+    }, false);
+
+    function TanMuChi(id) {
+        this.canvas = document.getElementById(id)
+        this.cxt = this.canvas.getContext("2d")
+        this.w = this.canvas.clientWidth;
+        this.h = this.canvas.clientHeight / 2;
+        this.idx = 0;
+        this.tanMuChi = [[],[],[],[],[]];
+        this.data = [];
+    }
+
+    TanMuChi.prototype.isAllEnd = function () {
+        if (this.data.length > 0) {
+            return false;
+        }
+        for (let tanMus of this.tanMuChi) {
+            if (tanMus.length > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    TanMuChi.prototype.calcX = function () {
+        for (let i in this.tanMuChi) {
+            if (this.tanMuChi[i].length > 0) {
+                let baseSpeed = 2;
+                for (let tanMu of this.tanMuChi[i]) {
+                    tanMu.x = tanMu.x - baseSpeed - i % 2;
+                    console.log(tanMu)
+                }
+            }
+        }
+    }
+
+    TanMuChi.prototype.render = function () {
+        this.cxt.clearRect(0, 0, this.w, this.h)
+        for (let i in this.tanMuChi) {
+            if (this.tanMuChi[i].length > 0) {
+                for (let tanMu of this.tanMuChi[i]) {
+                    if (this.isTanMuEnd(tanMu)) {
+                        this.tanMuChi[i].shift();
+                    } else {
+                        this.cxt.fillText(tanMu.value, tanMu.x, tanMu.y)
+                    }
+                }
+            }
+        }
+    }
+
+    TanMuChi.prototype.addTanMu = function () {
+        let d = undefined;
+        if (this.data[0].time < time) {
+            d = this.data.shift();
+        }
+        if (d === undefined) {
+            return;
+        }
+        let by = (this.h - 60) / this.tanMuChi.length
+        for (let i = 0; i < this.tanMuChi.length; i++) {
+            let idx = this.idx ++ % this.tanMuChi.length;
+            let tanMus = this.tanMuChi[idx];
+            let lastTanMu = tanMus[tanMus.length - 1];
+            if (lastTanMu === undefined || this.isTanMuRemoved(lastTanMu)) {
+                let tanMu = {};
+                tanMu.x = this.w;
+                tanMu.y = 30 + by * idx;
+                tanMu.value = d.value;
+                this.tanMuChi[idx].push(tanMu)
+                break;
+            }
+        }
+    }
+
+    TanMuChi.prototype.isTanMuRemoved = function (tanMu) {
+        let width = this.cxt.measureText(tanMu.value).width;
+        return tanMu.x + width + 6 < this.w;
+    }
+
+    TanMuChi.prototype.isTanMuEnd = function (tanMu) {
+        let width = this.cxt.measureText(tanMu.value).width;
+        return tanMu.x < -width;
+    }
+
+    TanMuChi.prototype.setData = function (dom) {
+        let d = dom.getElementsByTagName("d")
+        for (let dd of d) {
+            let time = dd.getAttribute("p").split(",")[0]
+            let value = dd.innerText;
+            this.data.push({time:time,value:value})
+        }
+        this.data.sort((a, b) => {
+            return a.time - b.time;
+        })
+        console.log(this.data)
+    }
+</script>
+</html>
