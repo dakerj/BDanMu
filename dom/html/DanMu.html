@@ -173,7 +173,7 @@
     }
 
     BDanMu.prototype.getTranslateX = function (dom) {
-        return parseFloat(- $(dom).css("transform").substring(7).split(',')[4])
+        return - parseFloat($(dom).css("transform").substring(7).split(',')[4])
     }
 
     BDanMu.prototype.sendDanMu = function (dom) {
