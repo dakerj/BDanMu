@@ -25,6 +25,10 @@
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="/lib/jquery3.6.0.js"></script>
 <script>
+    console.log($("#parent").attr('name'));
+    let a = [1,2]
+    let b = [3,3]
+    console.log(a.length > b.length)
     function BDanMu(parentDom) {
         this.initFlag = false;
         this.pDom = parentDom;
@@ -94,54 +98,67 @@
         };
     }
 
-    BDanMu.prototype.selector = function (tanMuChi) {
+    BDanMu.prototype.selector = async function (tanMuChi) {
         // 0 获取应该发送的弹幕
         // 1 那个管道可以发射弹幕？
         // 2 该是否存在可复用的dom？
         // 3 发射dom
         // 4 dom运动完
 
-        // 模拟视频时间
-        tanMuChi.time = tanMuChi.time + tanMuChi.timerInterval / 1000;
-        tanMuChi.log("内部计时", tanMuChi.time);
-        let tanMuData = tanMuChi.danMuChi[tanMuChi.timeIndex];
-        if (tanMuData === undefined) {
-            tanMuChi.stop();
-            return null;
-        }
-        if (tanMuData.time > tanMuChi.time ) {
-            // 如果弹幕未到发射时间，直接返回
-            return null;
-        }
-        if (tanMuData.time > tanMuChi.time + 1) {
-            // 如果弹幕超时1s直接放弃发射，找下一个弹幕发射
-            tanMuChi.timeIndex ++;
-            tanMuChi.selector(tanMuChi);
-            return null;
-        }
-        // tanMuData = tanMuChi.danMuChi.shift();
-        for (let cIdx in tanMuChi.channels) {
-            let channel = tanMuChi.channels[cIdx];
-            if (channel.length > 0) {
-                let lastDanMu = channel[channel.length - 1];
-                let distance = tanMuChi.getTranslateX(lastDanMu);
-                if (distance > $(lastDanMu).width()) {
-                    tanMuChi.timeIndex ++;
-                    tanMuChi.channelSend(cIdx, tanMuData);
-                    break;
-                }
-            } else {
-                tanMuChi.timeIndex ++;
-                tanMuChi.channelSend(cIdx, tanMuData);
+        // tanMuChi.log("内部计时", tanMuChi.time);
+        let needSendDanMuData = [];
+        while (true) {
+            if (tanMuChi.timeIndex >= tanMuChi.danMuChi.length) {
+                tanMuChi.stop();
+                return null;
+            }
+            let tanMuData = tanMuChi.danMuChi[tanMuChi.timeIndex];
+            if (tanMuData.time > tanMuChi.time ) {
+                // 如果弹幕未到发射时间，直接返回
                 break;
             }
+            if (tanMuData.time > tanMuChi.time + 1) {
+                // 如果弹幕超时1s直接放弃发射，找下一个弹幕发射
+                tanMuChi.timeIndex ++;
+                continue;
+            }
+            tanMuData.tanMuChiIdx =tanMuChi.timeIndex;
+            tanMuChi.timeIndex ++;
+            needSendDanMuData.push(tanMuData);
+        }
 
+        if (needSendDanMuData.length > 0) {
+            for (let tanMuData of needSendDanMuData) {
+                for (let cIdx in tanMuChi.channels) {
+                    let channel = tanMuChi.channels[cIdx];
+                    if (cIdx < tanMuChi.channels.length - 1) {
+                        let nextChannel = tanMuChi.channels[(parseInt(cIdx) + 1)];
+                        if (channel.length > nextChannel.length) {
+                            // 如果下一个轨道比这个空闲去下一个管道
+                            continue;
+                        }
+                    }
+                    if (channel.length > 0) {
+                        let lastDanMu = channel[channel.length - 1];
+                        let distance = tanMuChi.getTranslateX(lastDanMu);
+                        if (isNaN(distance) || distance > $(lastDanMu).width()) {
+                            tanMuChi.timeIndex ++;
+                            tanMuChi.channelSend(cIdx, tanMuData);
+                            break;
+                        }
+                    } else {
+                        tanMuChi.timeIndex ++;
+                        tanMuChi.channelSend(cIdx, tanMuData);
+                        break;
+                    }
+                }
+            }
         }
     }
 
     BDanMu.prototype.channelSend = function (idx, data) {
         // 通道可用，获取dom
-        let dom = null;
+        let dom = undefined;
         if (this.danMuDoms[idx].length > 0) {
             dom = this.danMuDoms[idx].shift();
         } else {
@@ -149,6 +166,7 @@
         }
         $(dom).text(data.value);
         $(dom).attr("channel", idx);
+        $(dom).attr("idx", data.tanMuChiIdx);
         this.channels[idx].push(dom);
         this.sendDanMu(dom);
     }
@@ -188,11 +206,14 @@
     BDanMu.prototype.onDanMuEnd = function (tanMuchi) {
         return function () {
             let superIdx = $(this).attr("super");
+
             if (superIdx === undefined) {
                 let idx = $(this).attr("channel");
+                tanMuchi.log("tanMuEnd", "new" + idx, this.innerText);
                 tanMuchi.channelRemove(tanMuchi.channels[idx], this);
                 $(this).remove();
             } else {
+                tanMuchi.log("tanMuEnd", "super" + superIdx, this.innerText);
                 tanMuchi.channelRemove(tanMuchi.channels[superIdx], this);
                 // 弹幕要复位
                 $(this).css("transform","");
@@ -210,7 +231,7 @@
 
     BDanMu.prototype.channelRemove = function (channel, dom) {
         for (let i in channel) {
-            if (channel[i][0] === dom) {
+            if ($(channel[i]).attr("idx") === $(dom).attr("idx")) {
                 channel.splice(i, 1);
                 break;
             }
@@ -227,7 +248,9 @@
         if (this.initFlag) {
             if (this.timer === null) {
                 this.timer = setInterval(() => {
-                    return this.selector(this)
+                    // 模拟视频时间
+                    this.time = this.time + this.timerInterval / 1000;
+                    this.selector(this);
                     }, this.timerInterval);
             }
         } else {
@@ -237,6 +260,7 @@
 
     BDanMu.prototype.stop = function () {
         try {
+            this.log(this);
             clearInterval(this.timer);
             this.timer = null;
         } catch (e) {
