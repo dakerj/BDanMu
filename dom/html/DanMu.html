@@ -29,8 +29,10 @@
         this.initFlag = false;
         this.pDom = parentDom;
         this.dom = null;
-        this.showDom = null;
+        this.time = 0;
+        this.timeIndex = 0;
         this.timer = null;
+        this.timerInterval = 100;
         this.danMuChi = [];
         this.channels = [[],[],[],[],[]];
         this.danMuDoms = [];
@@ -47,6 +49,7 @@
             this.dom = $("<div id=\"bTanMu\"></div>")
             $(this.pDom).append(this.dom);
             $(this.dom).css({
+                "opacity": "0.8",
                 "font-min-size": "18px",
                 "color": "whitesmoke",
                 "background": "transparent",
@@ -78,7 +81,7 @@
             let dd = $(d).attr("p").split(",");
             this.danMuChi.push(this.newDanMu(dd[0],d.innerText))
         }
-        this.danMuChi.sort();
+        this.sort();
         this.log("当前弹幕池", this.danMuChi)
     }
 
@@ -97,22 +100,38 @@
         // 2 该是否存在可复用的dom？
         // 3 发射dom
         // 4 dom运动完
-        let tanMuData = tanMuChi.danMuChi[0];
+
+        // 模拟视频时间
+        tanMuChi.time = tanMuChi.time + tanMuChi.timerInterval / 1000;
+        tanMuChi.log("内部计时", tanMuChi.time);
+        let tanMuData = tanMuChi.danMuChi[tanMuChi.timeIndex];
         if (tanMuData === undefined) {
             tanMuChi.stop();
             return null;
         }
-        tanMuData = tanMuChi.danMuChi.shift();
+        if (tanMuData.time > tanMuChi.time ) {
+            // 如果弹幕未到发射时间，直接返回
+            return null;
+        }
+        if (tanMuData.time > tanMuChi.time + 1) {
+            // 如果弹幕超时1s直接放弃发射，找下一个弹幕发射
+            tanMuChi.timeIndex ++;
+            tanMuChi.selector(tanMuChi);
+            return null;
+        }
+        // tanMuData = tanMuChi.danMuChi.shift();
         for (let cIdx in tanMuChi.channels) {
             let channel = tanMuChi.channels[cIdx];
             if (channel.length > 0) {
                 let lastDanMu = channel[channel.length - 1];
                 let distance = tanMuChi.getTranslateX(lastDanMu);
                 if (distance > $(lastDanMu).width()) {
+                    tanMuChi.timeIndex ++;
                     tanMuChi.channelSend(cIdx, tanMuData);
                     break;
                 }
             } else {
+                tanMuChi.timeIndex ++;
                 tanMuChi.channelSend(cIdx, tanMuData);
                 break;
             }
@@ -200,7 +219,7 @@
 
     BDanMu.prototype.sort = function () {
         this.danMuChi.sort((a, b) => {
-            return a - b;
+            return a.time - b.time;
         })
     }
 
@@ -209,7 +228,7 @@
             if (this.timer === null) {
                 this.timer = setInterval(() => {
                     return this.selector(this)
-                    }, 100);
+                    }, this.timerInterval);
             }
         } else {
             this.log("未初始化，无法启动");
