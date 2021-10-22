@@ -17,9 +17,13 @@ function BDanMuSearch() {
     };
     this.sites = {
         list: [],
-        siteEl: {}
+        site_el: {}
     };
-    this.currentSite = "";
+    this.currentSite = {
+        name: "",
+        current_bangumi: "",
+        current_ep: ""
+    };
     this.searchMap = {
         searchName: "",
         searchEP: ""
@@ -37,7 +41,6 @@ function BDanMuSearch() {
 BDanMuSearch.prototype.search = function () {
     // 获得数据后
     let d = apiData.searchResult;
-    console.log(d);
     if (d.code === 0 && d.message === "0") {
         if (d.data.result.length > 0) {
             let result = d.data.result[0];
@@ -70,13 +73,19 @@ BDanMuSearch.prototype.thenSearchEP = function () {
             }
         }
     }
-    console.log("get data step two:", this.data);
+    console.log("get data step two:", this.data.eps);
     return this;
 }
 // 获取B站对应剧集编号的弹幕id
 BDanMuSearch.prototype.thenSearchCid = function () {
-    this.data.current_cid = this.data.eps[0].cid;
-    console.log("get data step three:", this.data);
+    for (let ep of this.data.eps) {
+        if (this.currentSite.current_ep === ep.title) {
+            this.data.current_cid = ep.cid;
+            break;
+        }
+    }
+    // this.data.current_cid = this.data.eps[0].cid;
+    console.log("get data step three:", this.data.current_cid);
     return this;
 }
 // 获取B站弹幕
@@ -94,7 +103,7 @@ BDanMuSearch.prototype.getSearchEP = function () {
 }
 // 设置当前站点
 BDanMuSearch.prototype.setCurrentSite = function (site) {
-    this.currentSite = site;
+    this.currentSite.name = site;
 }
 
 export default BDanMuSearch;
