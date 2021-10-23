@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="parent">
+    <iframe src="./test.html"></iframe>
+    <div class="video"></div>
+    <div class="danmu"></div>
+</div>
+</body>
+<style>
+    .parent{
+        height: 200px;
+        width: 200px;
+        position: absolute;
+    }
+    .video {
+        position: relative;
+        height: 100%;
+        width: 100%;
+    }
+    .video:hover {
+        background-color: red;
+    }
+    .danmu {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+</style>
+<script src="/lib/jquery.js"></script>
+<script>
+    let ifm = $("iframe");
+    $(ifm).on("load", ()=> {
+        let ifmc = $(ifm).contents();
+        let d = $(ifm).contents().find(".gohome.l");
+        console.log(this);
+        console.log(ifm, ifmc, d);
+    })
+
+</script>
+</html>

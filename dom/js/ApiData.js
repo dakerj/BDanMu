@@ -2030,4 +2030,99 @@ const data = {
     ]
 }
 
+const ss = {
+    "type": "media_bangumi",
+    "media_id": 28235323,
+    "title": "<em class=\"keyword\">斗神姬</em> 日语版",
+    "org_title": "",
+    "media_type": 4,
+    "cv": "李星澜：高桥李依\n朱迪斯：石原夏织\n爱尔纳：五十岚裕美\n艾尔：仲田ありさ\n露娜：洲崎绫\n李星遥：竹达彩奈",
+    "staff": "出品人：李旎 孙晓光 龚震华\n总制片人：张圣晏 徐蓓 骆艳艳 朱雁春 孙旻 叶伟 \n总监制：徐珏 朱贝宁 真页 龚震华 \n联合制片人：娄婷 王蓉 张宇 田磊 \n联合监制：张佶骏 陈晓璐 金璐璐 牟珊珊\n文学顾问：山崎理\n人物设计：沈霏\n美术设计：Inspired\n色彩设计：季倩倩\n摄影监督：陈辰\n配音公司：北斗企鹅\n配音导演：皇贞季\n配音统筹：李睿枭\n录音师：刘乐鑫 梁潇毅\n版权支持：陈卿 潘琳琳 刘綦   \n项目支持：黄思齐 杨璐 田雪姣 郑珊珊 褚佳昊 闫明欣 张诗韵 徐慧宇 马帅\n市场中心总策划：杨亮\n版权运营：范绮雯 易小丽 杜明珠 张贤子 申雨晨 何莺 董亦安 金程 苍菂 章韵怡 陈佳迷 马雪兵 张昭 勾相久 李辰 吴金蕊 吴霏烟 刘卉媛 王晓婷 毛天洋\n运营推广：饶子璇 马雪兵 张昭 勾相久 李辰 吴金蕊 吴霏烟 刘卉媛 王晓婷 毛天洋\n市场中心：李云灵\n财务支持：孟钧 金磊 朱征 仝略略 梁晨 王露瑶\n法务支持：李巍 祁立丹 党齐秦",
+    "season_id": 39629,
+    "is_avid": false,
+    "hit_columns": [
+    "title"
+],
+    "hit_epids": "",
+    "season_type": 4,
+    "season_type_name": "国创",
+    "selection_style": "grid",
+    "ep_size": 2,
+    "url": "https://www.bilibili.com/bangumi/play/ss39629",
+    "button_text": "立即观看",
+    "is_follow": 0,
+    "is_selection": 1,
+    "eps": [
+    {
+        "id": 425869,
+        "cover": "http://i0.hdslb.com/bfs/archive/1dd16c1837a5f1d05b133c45415f7054b1d9f149.jpg",
+        "title": "1",
+        "url": "https://www.bilibili.com/bangumi/play/ep425869",
+        "release_date": "",
+        "badges": null,
+        "index_title": "1",
+        "long_title": "斗神机"
+    },
+    {
+        "id": 425870,
+        "cover": "http://i0.hdslb.com/bfs/archive/3d2f1b60abbe9aa51538cd11143916e48be86ef8.jpg",
+        "title": "2",
+        "url": "https://www.bilibili.com/bangumi/play/ep425870",
+        "release_date": "",
+        "badges": [
+            {
+                "text": "会员",
+                "text_color": "#FFFFFF",
+                "text_color_night": "#E5E5E5",
+                "bg_color": "#FB7299",
+                "bg_color_night": "#BB5B76",
+                "border_color": "#FB7299",
+                "border_color_night": "#BB5B76",
+                "bg_style": 1
+            }
+        ],
+        "index_title": "2",
+        "long_title": "斗神姬部队"
+    }
+],
+    "badges": [
+    {
+        "text": "出品",
+        "text_color": "#FFFFFF",
+        "text_color_night": "#E5E5E5",
+        "bg_color": "#00C0FF",
+        "bg_color_night": "#0B91BE",
+        "border_color": "#00C0FF",
+        "border_color_night": "#0B91BE",
+        "bg_style": 1
+    }
+],
+    "cover": "http://i0.hdslb.com/bfs/bangumi/image/767b0f35b0fd1aa26e02b986b546923f426e660c.png",
+    "areas": "中国大陆",
+    "styles": "科幻/战斗/机战/少女",
+    "goto_url": "https://www.bilibili.com/bangumi/play/ss39629",
+    "desc": "在遥远的过去，因开采无限能源而招来涅伽尔的侵袭、流亡至地球的异星幸存者，为地球创造了神代遗迹及文明并延续至今。当地球面临同样的危机时，封存在遗迹中的巨大机器人苏醒，为了寻找在涅伽尔袭击中下落不明的姐姐...",
+    "pubtime": 1634054400,
+    "media_mode": 2,
+    "fix_pubtime_str": "2021年10月13日",
+    "media_score": {
+    "score": 0,
+        "user_count": 0
+},
+    "display_info": [
+    {
+        "text": "出品",
+        "text_color": "#FFFFFF",
+        "text_color_night": "#E5E5E5",
+        "bg_color": "#00C0FF",
+        "bg_color_night": "#0B91BE",
+        "border_color": "#00C0FF",
+        "border_color_night": "#0B91BE",
+        "bg_style": 1
+    }
+],
+    "pgc_season_id": 39629,
+    "corner": 13
+}
+
 export default apiData;

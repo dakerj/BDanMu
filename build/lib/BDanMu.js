@@ -1,5 +1,3 @@
-import("/lib/jquery")
-
 function BDanMu() {
     this.initFlag = false;
     this.pDom = null;
@@ -252,5 +250,4 @@ BDanMu.prototype.stop = function () {
 BDanMu.prototype.log = function (...data) {
     console.log("BTanMu：", data);
 }
-
-export default BDanMu;
+window.BDanMu = BDanMu;

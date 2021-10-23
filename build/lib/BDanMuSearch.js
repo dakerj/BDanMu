@@ -1,5 +1,3 @@
-import "../../lib/jquery.js"
-
 function BDanMuSearch() {
     this.api = {
         searchApi: function (keyword) {
@@ -185,4 +183,5 @@ BDanMuSearch.prototype.init = function (site) {
     this.getSearchName();
     this.getSearchEP();
 }
+window.BDanMuSearch = BDanMuSearch;
 export default BDanMuSearch;
